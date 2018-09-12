@@ -39,8 +39,65 @@ void LED_Init(void)
   GPIO_SetBits(GPIOA, GPIO_Pin_1);
 }
 
+/*点亮LED*/
+void LED_ON(void) 
+{
+	GPIO_ResetBits(LED_PORT3,LED3);
+}
+
+/*关闭LED.PA81*/
+void LED_OFF(void)
+{
+	GPIO_SetBits(LED_PORT3,LED3);
+}
+
+LED_TYPE	ledCtr;	
+
+void LedSetStatus(uint32_t onTime,uint32_t offTime,uint32_t times)		
+{
+	ledCtr.ledOnTime = onTime;
+	ledCtr.ledOffTime = offTime;
+	ledCtr.ledCounter = 0;
+	ledCtr.ledEnable = LED_TURN_ON;
+	ledCtr.ledTimes = times;
+}													
 
 
+/*LED 闪烁控制*/
+void LedCtr(LED_TYPE *ledCtr, uint32_t times)	
+{
+	if(ledCtr->ledEnable == LED_TURN_ON) 
+	{
+			if(ledCtr->ledCounter > times)
+				ledCtr->ledCounter -= times;
+			else ledCtr->ledCounter = 0;
+				
+			if(ledCtr->ledCounter == 0) 
+			{
+				if(ledCtr->ledTimes) 
+				{
+					ledCtr->ledTimes--;
+					ledCtr->ledCounter = ledCtr->ledOffTime + ledCtr->ledOnTime;
+					ledCtr->ledStatus = LEDON;
+				}
+			}
+			
+			if(ledCtr->ledCounter <= ledCtr->ledOffTime) 
+				ledCtr->ledStatus = LEDOFF;
+	}
+}
 
 
-
+void CtrLed(uint32_t timeInterval) //在定时器中周期执行此函数，
+{
+	LedCtr(&ledCtr, timeInterval);
+	
+	if(ledCtr.ledStatus == LEDON)
+	{
+		LED_ON();
+	}
+	else 
+	{
+		LED_OFF();
+	}
+}	

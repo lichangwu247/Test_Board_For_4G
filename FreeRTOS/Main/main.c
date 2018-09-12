@@ -1,6 +1,9 @@
 #include "led.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "timer.h"
+#include "usart3.h"
+
 /*********************************************************************************
 *********************启明欣欣 STM32F407应用开发板(高配版)*************************
 **********************************************************************************
@@ -33,7 +36,10 @@ int main(void)
   NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4); //设置系统中断优先级分组2
 	
 	delay_init();		  //初始化延时函数
+	Tim2_Init(50-1,720-1);//Timer2初始化，用于LED控制
 	LED_Init();		    //初始化LED端口
+	
+	Usart3_Init(230400);
 		//创建开始任务
     xTaskCreate((TaskFunction_t )start_task,            //任务函数
                 (const char*    )"start_task",          //任务名称
@@ -47,6 +53,7 @@ int main(void)
 
 void start_task(void *pvParameters)
 { 
+	/*
 	while(1)
 	{
     LED0=0;     //LED0亮
@@ -63,7 +70,7 @@ void start_task(void *pvParameters)
     LED1=1;     //LED1灭
     LED2=0;     //LED2亮
     delay_ms(500);
-	}
+	}*/
 }
 
 

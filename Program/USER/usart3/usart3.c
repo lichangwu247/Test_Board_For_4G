@@ -96,37 +96,23 @@ void Uart3_DMA_Init(u32 bound)
 	DMA_InitStructure.DMA_Channel = DMA_Channel_4; 
 	
 	//外设地址
-	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)(&USART3->DR);//串口3发送地址
-	//
-	DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)Tx_Buf_Gsm;//发送BUFF的地址
-	DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;//从DMA到外部串口传送
-	DMA_InitStructure.DMA_BufferSize = TX_LEN_GSM;//发送缓冲区大小
-  
+	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)(&USART3->DR);  //串口3发送地址
+	DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)Tx_Buf_Gsm;				 //发送BUFF的地址
+	DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;					     //从DMA到外部串口传送
+	DMA_InitStructure.DMA_BufferSize = TX_LEN_GSM;									     //发送缓冲区大小
 	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-	//设置DMA的内存为递增模式
-	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-	//外设数据字长
-	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
-	//内存数据字长
-	DMA_InitStructure.DMA_MemoryDataSize = DMA_PeripheralDataSize_Byte;
-	//传输模式
-	DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
-	//DMA优先级
-	DMA_InitStructure.DMA_Priority = DMA_Priority_High;
-	
-  // 如果FIFO模式或直接将用于指定的流，不使能FIFO
-	DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;    
-	//指定FIFO阈值水平
-	DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;        
-	//指定Burst转移配置内存传输
-	DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;       
-	//指定的Burst转移配置外围转移
-	DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
-	
-	//配置DMA1通道 
-	DMA_Init(DMA1_Stream6, &DMA_InitStructure);  
-	//使能中断
-	DMA_ITConfig(DMA1_Stream6,DMA_IT_TC,ENABLE);  
+	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;               //设置DMA的内存为递增模式
+	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;	//外设数据字长
+	DMA_InitStructure.DMA_MemoryDataSize = DMA_PeripheralDataSize_Byte;	   //内存数据字长
+	DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;                         //传输模式
+	DMA_InitStructure.DMA_Priority = DMA_Priority_High;                     //DMA优先级
+	DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;                  // 如果FIFO模式或直接将用于指定的流，不使能FIFO 
+	DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;       //指定FIFO阈值水平      
+	DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;              //指定Burst转移配置内存传输     
+	DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;      //指定的Burst转移配置外围转移
+
+	DMA_Init(DMA1_Stream6, &DMA_InitStructure);                              //配置DMA1通道
+	DMA_ITConfig(DMA1_Stream6,DMA_IT_TC,ENABLE);  	                         //使能中断
   
 	
 	//串口接收配置
@@ -139,26 +125,16 @@ void Uart3_DMA_Init(u32 bound)
 	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
 	DMA_InitStructure.DMA_BufferSize = USART3_REC_NUM;
 	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-	//
 	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-	//
 	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
-	//
 	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
-	//
 	DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
-	//
 	DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;
-		DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;    
-	//
+	DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;    
 	DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;        
-	//
-	DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;       
-	//  
-	DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single; 
-	//       
+	DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;         
+	DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;        
 	DMA_Init(DMA1_Stream1, &DMA_InitStructure);  
-	//
 	DMA_Cmd(DMA1_Stream1,ENABLE);
 	
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB,ENABLE); //使能GPIOB时钟 
