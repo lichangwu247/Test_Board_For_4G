@@ -10,6 +10,23 @@ typedef uint8_t   u8;
 
 typedef struct
 {
+	u8  SSID[64];
+	u8  PASSWORDD[32];
+	u8  RSSI[2];
+	u8  IP[15];
+	u8  ON_OFF_Line[3];
+	u8  HosetName[7];
+}Device_Infomation;
+
+typedef struct
+{
+	u8  System_Flag;
+  u8  Pad[3];
+}Device_Save_Flag;
+
+
+typedef struct
+{
 	u16 data0:1;
 	u16 data1:1;
 	u16 data2:1;

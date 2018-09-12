@@ -3,7 +3,10 @@
 #include "task.h"
 #include "timer.h"
 #include "usart3.h"
-
+#include "task.h"
+#include "lcd.h"
+#include "w25qxx.h" 
+#include "key.h"
 /*********************************************************************************
 *********************启明欣欣 STM32F407应用开发板(高配版)*************************
 **********************************************************************************
@@ -38,8 +41,12 @@ int main(void)
 	delay_init();		  //初始化延时函数
 	Tim2_Init(50-1,720-1);//Timer2初始化，用于LED控制
 	LED_Init();		    //初始化LED端口
+	KEY_Init();
+	W25QXX_Init();			//W25QXX初始化 
+	LCD_Init();           //初始化LCD FSMC接口和显示驱动
 	
 	Usart3_Init(230400);
+	
 		//创建开始任务
     xTaskCreate((TaskFunction_t )start_task,            //任务函数
                 (const char*    )"start_task",          //任务名称
@@ -47,30 +54,9 @@ int main(void)
                 (void*          )NULL,                  //传递给任务函数的参数
                 (UBaseType_t    )START_TASK_PRIO,       //任务优先级
                 (TaskHandle_t*  )&StartTask_Handler);   //任务句柄              
-    vTaskStartScheduler();          //开启任务调度
+    vTaskStartScheduler();        										  //开启任务调度
  
 }
 
-void start_task(void *pvParameters)
-{ 
-	/*
-	while(1)
-	{
-    LED0=0;     //LED0亮
-    LED1=1;     //LED1灭
-    LED2=1;     //LED2灭
-		
-    delay_ms(500);
-		LED0=1;     //LED0灭
-    LED1=0;     //LED1亮
-    LED2=1;     //LED2灭
-		 
-		delay_ms(500);
-		LED0=1;     //LED0灭
-    LED1=1;     //LED1灭
-    LED2=0;     //LED2亮
-    delay_ms(500);
-	}*/
-}
 
 

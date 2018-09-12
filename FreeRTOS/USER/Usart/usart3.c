@@ -1,5 +1,8 @@
 #include "usart3.h"
 #include "led.h"
+#include "device.h"
+#include "LinkList.h"
+
 /*********************************************************************************
 **********************************************************************************
 * 文件名称: usart3.c                                                             *
@@ -13,6 +16,7 @@
 *********************************************************************************/
 
 u8 USART_RX_BUF[USART3_REC_NUM];     //接收缓冲,最大USART_REC_LEN个字节.
+
 u8 RX_buf[USART3_REC_NUM];
 
 void Usart3_Init(u32 bound)
@@ -47,7 +51,10 @@ void Usart3_Init(u32 bound)
 	USART_InitStructure.USART_BaudRate = bound;//波特率设置
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;//无硬件数据流控制
 	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;	//收发模式
-  USART_Init(USART3, &USART_InitStructure);                        //初始化串口3
+  USART_InitStructure.USART_WordLength=USART_WordLength_8b;
+	USART_InitStructure.USART_StopBits=USART_StopBits_1;
+	USART_InitStructure.USART_Parity=USART_Parity_No;
+	USART_Init(USART3, &USART_InitStructure);                        //初始化串口3
 													//打开串口3
   USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);         //开启相关中断
 	
@@ -94,21 +101,22 @@ void Usart3_Init(u32 bound)
 
 void USART3_IRQHandler(void)
 {	
-	u16 RX_len = 0;
 	if(USART_GetITStatus(USART3, USART_IT_IDLE) != RESET)
   {
 			//清除IDLE中断
 			USART_ReceiveData(USART3);
 			RX_len = USART3_REC_NUM - DMA_GetCurrDataCounter(DMA1_Stream1);
 			
-			memcpy(RX_buf,USART_RX_BUF,RX_len);
-		  LedSetStatus(500,500,50);
-			USART3_SendData(RX_buf,RX_len);
+		  LedSetStatus(500,500,1);
+			RX_len=device_data_filter(USART_RX_BUF,RX_len);
+			memset(USART_RX_BUF,0,sizeof(USART_RX_BUF));
 		
+	   	RX_Finish=1;
 		  USART_ClearITPendingBit(USART3,USART_IT_IDLE);     //清除中断标记             
    		DMA_Cmd(DMA1_Stream1,DISABLE);
 			DMA_SetCurrDataCounter(DMA1_Stream1,USART3_REC_NUM);  //恢复DMA指针,等待下一次*/
 			DMA_Cmd(DMA1_Stream1,ENABLE);
+		  
 	}
 	if(USART_GetITStatus(USART3, USART_IT_PE | USART_IT_FE | USART_IT_NE) != RESET)//出错
   {
@@ -136,3 +144,23 @@ void USART3_SendData(u8* buff, u16 len)
 }
 
 
+//串口1发送一个字符
+void uart3SendChar(u8 ch)
+{      
+	while((USART3->SR&0x40)==0);  
+    USART3->DR = (u8) ch;      
+}
+/****************************************************************************
+* 名    称: void uart1SendChars(u8 *str, u16 strlen)
+* 功    能：串口1发送一字符串
+* 入口参数：*str：发送的字符串
+            strlen：字符串长度
+* 返回参数：无
+* 说    明： 
+****************************************************************************/
+void uart3SendChars(u8 *str, u16 strlen)
+{ 
+	  u16 k= 0 ; 
+   do { uart3SendChar(*(str + k)); k++; }   //循环发送,直到发送完毕   
+    while (k < strlen); 
+} 
